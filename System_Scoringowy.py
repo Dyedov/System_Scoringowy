@@ -1,5 +1,8 @@
-import pandas as pd
 import oracledb
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
 pd.set_option('display.max_columns', None)
 
 connection = oracledb.connect(
@@ -26,8 +29,21 @@ kampanie_df = pd.read_sql('SELECT * FROM VW_KAMPANIE', con=connection)
 demografia_df = pd.read_sql('SELECT * FROM VW_DEMOGRAFIA', con=connection)
 online_offline_df = pd.read_sql('SELECT * FROM VW_ONLINE_OFFLINE', con=connection)
 
-print(zakupy_df.head())
+# print(zakupy_df.head(11))
+# print(kampanie_df.head())
+# print(demografia_df.head())
+# print(online_offline_df.head())
+
+wydatki_kolumny = zakupy_df.drop(columns=['ID'])
+korelacje = wydatki_kolumny.corr()
+
+plt.figure(figsize=(10,8))
+sns.heatmap(korelacje, annot=True, cmap='coolwarm', fmt='.2f')
+plt.title("Heatmapa korelacji wydatków")
+plt.tight_layout()
+plt.show()
 
 connection.close()
+
 
 
