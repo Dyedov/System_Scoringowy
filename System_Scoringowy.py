@@ -74,6 +74,8 @@ print(srednie_wg_dzieci)
 
 dane = dane[dane['DOCHOD'].notna()]
 dane['PRZEDZIAL_DOCHODU'] = (dane['DOCHOD'] // 10000) * 10000
+dane = dane[dane['PRZEDZIAL_DOCHODU'] > 0]
+
 srednie_wg_dochodu = (
     dane.groupby('PRZEDZIAL_DOCHODU')[['WYDATKI_WINO','WYDATKI_ZLOTO', 'WYDATKI_SLODYCZE']]
     .mean()
