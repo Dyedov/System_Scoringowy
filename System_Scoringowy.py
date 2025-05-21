@@ -54,6 +54,8 @@ srednie_wg_wieku = dane.groupby('WIEK')[['WYDATKI_WINO', 'WYDATKI_ZLOTO', 'WYDAT
 # srednie_wg_wieku = srednie_wg_wieku.sort_index(ascending=False)
 srednie_wg_wieku = srednie_wg_wieku.round(2)
 
+print('\n')
+print('Średnie wydatki wg wieku:')
 print(srednie_wg_wieku.head())
 
 # dane['DZIECI'] = dane['DZIECI_W_DOMU'] + dane['NASTOLATKI_W_DOMU']
@@ -68,7 +70,19 @@ srednie_wg_dzieci = (
 print('\n')
 print('Średnie wydatki wg liczby dzieci:')
 print(srednie_wg_dzieci)
+# print(dane['DZIECI'].value_counts())
 
+dane = dane[dane['DOCHOD'].notna()]
+dane['PRZEDZIAL_DOCHODU'] = (dane['DOCHOD'] // 10000) * 10000
+srednie_wg_dochodu = (
+    dane.groupby('PRZEDZIAL_DOCHODU')[['WYDATKI_WINO','WYDATKI_ZLOTO', 'WYDATKI_SLODYCZE']]
+    .mean()
+    .round(2)
+    .reset_index()
+)
+
+print('\nŚrednie wydatki wg przedziału dochodu:')
+print(srednie_wg_dochodu.head(10))
 
 connection.close()
 
