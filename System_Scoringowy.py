@@ -34,14 +34,41 @@ online_offline_df = pd.read_sql('SELECT * FROM VW_ONLINE_OFFLINE', con=connectio
 # print(demografia_df.head())
 # print(online_offline_df.head())
 
-wydatki_kolumny = zakupy_df.drop(columns=['ID'])
-korelacje = wydatki_kolumny.corr()
+# wydatki_kolumny = zakupy_df.drop(columns=['ID'])
+# korelacje = wydatki_kolumny.corr()
+#
+# plt.figure(figsize=(10,8))
+# sns.heatmap(korelacje, annot=True, cmap='coolwarm', fmt='.2f')
+# plt.title("Heatmapa korelacji wydatków")
+# plt.tight_layout()
+# plt.show()
 
-plt.figure(figsize=(10,8))
-sns.heatmap(korelacje, annot=True, cmap='coolwarm', fmt='.2f')
-plt.title("Heatmapa korelacji wydatków")
-plt.tight_layout()
-plt.show()
+dane = zakupy_df.merge(demografia_df, on='ID')
+dane = dane.merge(kampanie_df, on='ID')
+dane = dane.merge(online_offline_df, on='ID')
+
+print(dane.head())
+
+dane['WIEK'] = 2025 - dane['ROK_URODZENIA']
+srednie_wg_wieku = dane.groupby('WIEK')[['WYDATKI_WINO', 'WYDATKI_ZLOTO', 'WYDATKI_SLODYCZE']].mean().reset_index()
+# srednie_wg_wieku = srednie_wg_wieku.sort_index(ascending=False)
+srednie_wg_wieku = srednie_wg_wieku.round(2)
+
+print(srednie_wg_wieku.head())
+
+# dane['DZIECI'] = dane['DZIECI_W_DOMU'] + dane['NASTOLATKI_W_DOMU']
+dane['DZIECI'] = dane[['DZIECI_W_DOMU', 'NASTOLATKI_W_DOMU']].max(axis=1)
+srednie_wg_dzieci = (
+    dane.groupby('DZIECI')[['WYDATKI_WINO','WYDATKI_ZLOTO', 'WYDATKI_SLODYCZE']]
+    .mean()
+    .round(2)
+    .reset_index()
+)
+
+print('\n')
+print('Średnie wydatki wg liczby dzieci:')
+print(srednie_wg_dzieci)
+
 
 connection.close()
 
