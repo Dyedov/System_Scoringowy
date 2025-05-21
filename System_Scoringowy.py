@@ -86,6 +86,15 @@ srednie_wg_dochodu = (
 print('\nŚrednie wydatki wg przedziału dochodu:')
 print(srednie_wg_dochodu.head(10))
 
+print('\n')
+# print(online_offline_df.columns)
+print('Nagłówki kolumn VW_ONLINE_OFFLINE: ')
+for kolumny in online_offline_df.columns:
+    print(kolumny)
+
+# print('\n')
+# print(online_offline_df['TYP_ZAKUPU'].value_counts())
+
 connection.close()
 
 
