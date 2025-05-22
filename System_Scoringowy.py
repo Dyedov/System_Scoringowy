@@ -87,13 +87,23 @@ print('\nŚrednie wydatki wg przedziału dochodu:')
 print(srednie_wg_dochodu.head(10))
 
 print('\n')
-# print(online_offline_df.columns)
+# print(list(online_offline_df.columns))
 print('Nagłówki kolumn VW_ONLINE_OFFLINE: ')
 for kolumny in online_offline_df.columns:
     print(kolumny)
 
-# print('\n')
-# print(online_offline_df['TYP_ZAKUPU'].value_counts())
+print('\n')
+print('Nagłówki kolumn VW_ZAKUPY: ')
+for kolumny in zakupy_df.columns:
+    print(kolumny)
+
+df = pd.merge(zakupy_df, online_offline_df, on = 'ID')
+df['ONLINE'] = (df['ZAKUPY_ONLINE'] > 0).astype(int)
+df['OFFLINE'] = ((df['ZAKUPY_STACJONARNE'] > 0) | (df['ZAKUPY_KATALOGOWE'] > 0)).astype(int)
+
+
+
+
 
 connection.close()
 
