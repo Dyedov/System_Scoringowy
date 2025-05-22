@@ -101,8 +101,17 @@ df = pd.merge(zakupy_df, online_offline_df, on = 'ID')
 df['ONLINE'] = (df['ZAKUPY_ONLINE'] > 0).astype(int)
 df['OFFLINE'] = ((df['ZAKUPY_STACJONARNE'] > 0) | (df['ZAKUPY_KATALOGOWE'] > 0)).astype(int)
 
+srednie_online_offline = (
+    df.groupby(['ONLINE', 'OFFLINE'])[
+        ['WYDATKI_WINO', 'WYDATKI_OWOCE', 'WYDATKI_MIESO', 'WYDATKI_RYBY', 'WYDATKI_SLODYCZE', 'WYDATKI_ZLOTO']
+    ]
+    .mean()
+    .round(2)
+    .reset_index()
+)
 
-
+print('\nŚrednie wydatki wg kanału zakupu (ONLINE vs OFFLINE):')
+print(srednie_online_offline)
 
 
 connection.close()
