@@ -145,8 +145,8 @@ print('\nLiczba VIP:', df['VIP'].sum())
 print('Liczba pasywnych:', df['PASYWNY'].sum())
 print('Liczba promocyjnych:', df['PROMOCYJNY'].sum())
 
-# print(f'\nLiczba wszystkich klientów: {len(df)}')
-# print(f'10% klientów to: {round(len(df) * 0.10)}')
+print(f'\nLiczba wszystkich klientów: {len(df)}')
+print(f'10% klientów to: {round(len(df) * 0.10)}')
 
 connection.close()
 
