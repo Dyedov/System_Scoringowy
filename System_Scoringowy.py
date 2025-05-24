@@ -113,6 +113,40 @@ srednie_online_offline = (
 print('\nŚrednie wydatki wg kanału zakupu (ONLINE vs OFFLINE):')
 print(srednie_online_offline)
 
+# print(list(kampanie_df.columns))
+print('\n')
+print('Nagłówki kolumn VW_KAMPANIE: ')
+for kolumny in kampanie_df.columns:
+    print(kolumny)
+
+df['SUMA_WYDATKÓW'] = (
+    df['WYDATKI_WINO']
+    + df['WYDATKI_OWOCE']
+    + df['WYDATKI_MIESO']
+    + df['WYDATKI_RYBY']
+    + df['WYDATKI_SLODYCZE']
+    + df['WYDATKI_ZLOTO']
+
+)
+
+prog_vip = df['SUMA_WYDATKÓW'].quantile(0.90)
+df['VIP'] = (df['SUMA_WYDATKÓW'] >= prog_vip).astype(int)
+
+prog_pasywny = df['SUMA_WYDATKÓW'].quantile(0.10)
+df['PASYWNY'] = (df['SUMA_WYDATKÓW'] <= prog_pasywny).astype(int)
+
+df = pd.merge(df, kampanie_df[['ID', 'ODPOWIEDZ_NA_KAMPANIE']], on='ID', how='left')
+df['PROMOCYJNY'] = df['ODPOWIEDZ_NA_KAMPANIE'].fillna(0).astype(int)
+
+print('\nPrzykładowi klienci z etykietami:')
+print(df[['ID', 'SUMA_WYDATKÓW', 'VIP', 'PASYWNY', 'PROMOCYJNY']].head(10))
+
+print('\nLiczba VIP:', df['VIP'].sum())
+print('Liczba pasywnych:', df['PASYWNY'].sum())
+print('Liczba promocyjnych:', df['PROMOCYJNY'].sum())
+
+# print(f'\nLiczba wszystkich klientów: {len(df)}')
+# print(f'10% klientów to: {round(len(df) * 0.10)}')
 
 connection.close()
 
