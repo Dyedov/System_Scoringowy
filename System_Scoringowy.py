@@ -145,8 +145,34 @@ print('\nLiczba VIP:', df['VIP'].sum())
 print('Liczba pasywnych:', df['PASYWNY'].sum())
 print('Liczba promocyjnych:', df['PROMOCYJNY'].sum())
 
-print(f'\nLiczba wszystkich klientów: {len(df)}')
-print(f'10% klientów to: {round(len(df) * 0.10)}')
+# print(f'\nLiczba wszystkich klientów: {len(df)}')
+# print(f'10% klientów to: {round(len(df) * 0.10)}')
+
+print('\nNagłówki kolumn VW_ZAKUPY: ')
+for kolumny in zakupy_df.columns:
+    print(kolumny)
+print('Nagłówki kolumn VW_KAMPANIE: ')
+for kolumny in kampanie_df.columns:
+    print(kolumny)
+print('Nagłówki kolumn VW_DEMOGRAFIA: ')
+for kolumny in demografia_df.columns:
+    print(kolumny)
+print('Nagłówki kolumn VW_ONLINE_OFFLINE: ')
+for kolumny in online_offline_df.columns:
+    print(kolumny)
+
+# for nazwa, df in {
+# "VW_ZAKUPY": zakupy_df,
+#     "VW_KAMPANIE": kampanie_df,
+#     "VW_DEMOGRAFIA": demografia_df,
+#     "VW_ONLINE_OFFLINE": online_offline_df
+# }.items():
+#     print(f'\nNagłówki kolumn {nazwa}:')
+#     print(df.columns.tolist())
+#     print()
+
+
+
 
 connection.close()
 
