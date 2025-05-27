@@ -28,6 +28,7 @@ zakupy_df = pd.read_sql('SELECT * FROM VW_ZAKUPY', con=connection)
 kampanie_df = pd.read_sql('SELECT * FROM VW_KAMPANIE', con=connection)
 demografia_df = pd.read_sql('SELECT * FROM VW_DEMOGRAFIA', con=connection)
 online_offline_df = pd.read_sql('SELECT * FROM VW_ONLINE_OFFLINE', con=connection)
+recency_df = pd.read_sql('SELECT ID, RECENCY FROM CUSTOMER_DATA', con=connection)
 
 # print(zakupy_df.head(11))
 # print(kampanie_df.head())
@@ -141,6 +142,8 @@ df['PROMOCYJNY'] = df['ODPOWIEDZ_NA_KAMPANIE'].fillna(0).astype(int)
 print('\nPrzykładowi klienci z etykietami:')
 print(df[['ID', 'SUMA_WYDATKÓW', 'VIP', 'PASYWNY', 'PROMOCYJNY']].head(10))
 
+df = pd.merge(df, recency_df, on='ID', how='left')
+
 print('\nLiczba VIP:', df['VIP'].sum())
 print('Liczba pasywnych:', df['PASYWNY'].sum())
 print('Liczba promocyjnych:', df['PROMOCYJNY'].sum())
@@ -182,6 +185,7 @@ for nazwa, df in dataframes.items():
     print(f'\nNagłówki kolumn {nazwa}:')
     for kolumna in df.columns:
         print(f'- {kolumna}')
+
 
 
 connection.close()
