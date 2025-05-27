@@ -138,11 +138,15 @@ df['PASYWNY'] = (df['SUMA_WYDATKÓW'] <= prog_pasywny).astype(int)
 
 df = pd.merge(df, kampanie_df[['ID', 'ODPOWIEDZ_NA_KAMPANIE']], on='ID', how='left')
 df['PROMOCYJNY'] = df['ODPOWIEDZ_NA_KAMPANIE'].fillna(0).astype(int)
-
-print('\nPrzykładowi klienci z etykietami:')
-print(df[['ID', 'SUMA_WYDATKÓW', 'VIP', 'PASYWNY', 'PROMOCYJNY']].head(10))
-
 df = pd.merge(df, recency_df, on='ID', how='left')
+
+# print('\nPrzykładowi klienci z etykietami:')
+print('\nPodsumowanie końcowe (z kolumną RECENCY):')
+print(df[['ID', 'SUMA_WYDATKÓW', 'VIP', 'PASYWNY', 'PROMOCYJNY', 'RECENCY']].head(10))
+
+print('\nrecency_df HEAD:')
+print(recency_df.head())
+print('\nKolumny recency_df:', recency_df.columns.tolist())
 
 print('\nLiczba VIP:', df['VIP'].sum())
 print('Liczba pasywnych:', df['PASYWNY'].sum())
@@ -185,6 +189,8 @@ for nazwa, df in dataframes.items():
     print(f'\nNagłówki kolumn {nazwa}:')
     for kolumna in df.columns:
         print(f'- {kolumna}')
+
+cechy = ['SUMA_WYDATKÓW', 'RECENCY', 'DOCHÓD', 'LICZBA_DZIECI']
 
 
 
