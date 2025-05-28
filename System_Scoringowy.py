@@ -190,7 +190,21 @@ for nazwa, df in dataframes.items():
     for kolumna in df.columns:
         print(f'- {kolumna}')
 
+from sklearn.preprocessing import StandardScaler
+# print('StandardScaler jest dostępny!')
+
 cechy = ['SUMA_WYDATKÓW', 'RECENCY', 'DOCHÓD', 'LICZBA_DZIECI']
+
+scaler = StandardScaler()
+
+print('\nKolumny w df:', df.columns.tolist())
+
+df_scaled = scaler.fit_transform(df[cechy])
+df_scaled = pd.DataFrame(df_scaled, columns=cechy)
+df_scaled['ID'] = df['ID'].values
+
+print('\nDane po standaryzacji (pierwsze 5 wierszy):')
+print(df_scaled.head())
 
 
 
