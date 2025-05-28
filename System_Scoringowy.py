@@ -190,14 +190,34 @@ for nazwa, df in dataframes.items():
     for kolumna in df.columns:
         print(f'- {kolumna}')
 
+df = pd.merge(zakupy_df, demografia_df, on='ID', how='left')
+df = pd.merge(df, online_offline_df, on='ID', how='left')
+df = pd.merge(df, kampanie_df[['ID', 'ODPOWIEDZ_NA_KAMPANIE']], on='ID', how='left')
+df = pd.merge(df, recency_df, on='ID', how='left')
+df['SUMA_WYDATKÓW'] = (
+    df['WYDATKI_WINO']
+    + df['WYDATKI_OWOCE']
+    + df['WYDATKI_MIESO']
+    + df['WYDATKI_RYBY']
+    + df['WYDATKI_SLODYCZE']
+    + df['WYDATKI_ZLOTO']
+
+)
+df['LICZBA_DZIECI'] = df[['DZIECI_W_DOMU', 'NASTOLATKI_W_DOMU']].max(axis=1)
+
+print('\nKolumny w df:')
+for col in df.columns:
+    print(col)
+
+cechy = ['SUMA_WYDATKÓW', 'RECENCY', 'DOCHOD', 'LICZBA_DZIECI']
+
 from sklearn.preprocessing import StandardScaler
-# print('StandardScaler jest dostępny!')
-
-cechy = ['SUMA_WYDATKÓW', 'RECENCY', 'DOCHÓD', 'LICZBA_DZIECI']
-
 scaler = StandardScaler()
 
-print('\nKolumny w df:', df.columns.tolist())
+# print('\nKolumny w df:', df.columns.tolist())
+# print('\nKolumny w df:')
+# for col in df.columns:
+#     print(col)
 
 df_scaled = scaler.fit_transform(df[cechy])
 df_scaled = pd.DataFrame(df_scaled, columns=cechy)
