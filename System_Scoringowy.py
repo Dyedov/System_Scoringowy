@@ -2,6 +2,7 @@ import oracledb
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+from scipy.cluster.vq import kmeans
 
 pd.set_option('display.max_columns', None)
 
@@ -226,7 +227,36 @@ df_scaled['ID'] = df['ID'].values
 print('\nDane po standaryzacji (pierwsze 5 wierszy):')
 print(df_scaled.head())
 
+# try:
+#     import sklearn
+#     import matplotlib
+#     print('Biblioteka sklearn jest zainstalowana: wersja', sklearn.__version__)
+#     print('Biblioteka matplotlib jest zainstalowana: wersja', matplotlib.__version__)
+# except ImportError as e:
+#     print('Brakuje biblioteki:', e.name)
 
+print('\nKolumny w df:')
+for col in df.columns:
+    print(col)
+
+from sklearn.cluster import KMeans
+
+x = df_scaled[['SUMA_WYDATKÓW', 'RECENCY', 'DOCHOD', 'LICZBA_DZIECI']].dropna()
+inercja = []
+zakres_klastrow = range(1, 11)
+
+for k in zakres_klastrow:
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    kmeans.fit(x)
+    inercja.append(kmeans.inertia_)
+
+plt.figure(figsize=(8, 5))
+plt.plot(zakres_klastrow, inercja, marker='o')
+plt.xlabel('Liczba klastrów (k)')
+plt.ylabel('Inercja')
+plt.title('Metoda łokcia - wybór liczby klastrów')
+plt.grid(True)
+plt.show()
 
 connection.close()
 
