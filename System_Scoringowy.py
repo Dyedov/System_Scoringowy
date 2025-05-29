@@ -276,16 +276,35 @@ segmenty = {
 
 x['SEGMENT'] = x['KLASTR'].map(segmenty)
 print(x[['KLASTR', 'SEGMENT']].value_counts().reset_index(name='liczba_klientów'))
+print()
 
-segmenty_liczba = x['SEGMENT'].value_counts()
-segmenty_liczba.plot(kind='bar', color='skyblue')
-plt.title('Liczba klientów w segmentach')
-plt.ylabel('Liczba klientów')
-plt.xlabel('Segment')
-plt.xticks(rotation=45)
-plt.tight_layout()
+podsumowanie_segmentow = x['SEGMENT'].value_counts().reset_index(name='LICZBA KLIENTÓW').rename(columns={'index': 'SEGMENT'})
+print(podsumowanie_segmentow)
+
+# segmenty_liczba = x['SEGMENT'].value_counts()
+# segmenty_liczba.plot(kind='bar', color='skyblue')
+# plt.title('Liczba klientów w segmentach')
+# plt.ylabel('Liczba klientów')
+# plt.xlabel('Segment')
+# plt.xticks(rotation=45)
+# plt.tight_layout()
+# plt.show()
+
+print('\n', x.columns)
+print('\n', x.head())
+print('\n', x.tail())
+
+plt.figure(figsize=(8, 8))
+plt.pie(
+    podsumowanie_segmentow['LICZBA KLIENTÓW'],
+    labels=podsumowanie_segmentow['SEGMENT'],
+    autopct='%1.1f%%',
+    startangle=140,
+    colors=plt.cm.Paired.colors
+)
+plt.title('Udział segmentów klientów')
+plt.axis('equal')
 plt.show()
-
 
 connection.close()
 
