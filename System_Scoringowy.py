@@ -250,13 +250,33 @@ for k in zakres_klastrow:
     kmeans.fit(x)
     inercja.append(kmeans.inertia_)
 
-plt.figure(figsize=(8, 5))
-plt.plot(zakres_klastrow, inercja, marker='o')
-plt.xlabel('Liczba klastrów (k)')
-plt.ylabel('Inercja')
-plt.title('Metoda łokcia - wybór liczby klastrów')
-plt.grid(True)
-plt.show()
+# plt.figure(figsize=(8, 5))
+# plt.plot(zakres_klastrow, inercja, marker='o')
+# plt.xlabel('Liczba klastrów (k)')
+# plt.ylabel('Inercja')
+# plt.title('Metoda łokcia - wybór liczby klastrów')
+# plt.grid(True)
+# plt.show()
+
+kmeans = KMeans(n_clusters=4, random_state=42)
+kmeans.fit(x)
+x['KLASTR'] = kmeans.labels_
+grupy = x.groupby('KLASTR').mean().reset_index()
+print('\nKlasteryzacja x = df_scaled:')
+print(grupy)
+print()
+
+segmenty = {
+    0: 'Oszczędni aktywni',
+    1: 'Lojalni rodzinni',
+    2: 'Pasywni',
+    3: 'VIP'
+}
+
+x['SEGMENT'] = x['KLASTR'].map(segmenty)
+print(x[['KLASTR', 'SEGMENT']].value_counts().reset_index(name='liczba_klientów'))
+
+
 
 connection.close()
 
