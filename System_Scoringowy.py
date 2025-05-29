@@ -3,6 +3,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy.cluster.vq import kmeans
+from scipy.ndimage import rotate
 
 pd.set_option('display.max_columns', None)
 
@@ -276,6 +277,14 @@ segmenty = {
 x['SEGMENT'] = x['KLASTR'].map(segmenty)
 print(x[['KLASTR', 'SEGMENT']].value_counts().reset_index(name='liczba_klientów'))
 
+segmenty_liczba = x['SEGMENT'].value_counts()
+segmenty_liczba.plot(kind='bar', color='skyblue')
+plt.title('Liczba klientów w segmentach')
+plt.ylabel('Liczba klientów')
+plt.xlabel('Segment')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
 
 
 connection.close()
