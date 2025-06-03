@@ -294,17 +294,27 @@ print('\n', x.columns)
 print('\n', x.head())
 print('\n', x.tail())
 
-plt.figure(figsize=(8, 8))
-plt.pie(
-    podsumowanie_segmentow['LICZBA KLIENTÓW'],
-    labels=podsumowanie_segmentow['SEGMENT'],
-    autopct='%1.1f%%',
-    startangle=140,
-    colors=plt.cm.Paired.colors
-)
-plt.title('Udział segmentów klientów')
-plt.axis('equal')
-plt.show()
+# plt.figure(figsize=(8, 8))
+# plt.pie(
+#     podsumowanie_segmentow['LICZBA KLIENTÓW'],
+#     labels=podsumowanie_segmentow['SEGMENT'],
+#     autopct='%1.1f%%',
+#     startangle=140,
+#     colors=plt.cm.Paired.colors
+# )
+# plt.title('Udział segmentów klientów')
+# plt.axis('equal')
+# plt.show()
+
+# print('\n---------------------------------')
+# for name, val in list(globals().items()):
+#     if isinstance(val, pd.DataFrame):
+#         print(name)
+
+print('\n-------------------------------------')
+y = x['SEGMENT']
+x = x[['SUMA_WYDATKÓW', 'RECENCY', 'DOCHOD', 'LICZBA_DZIECI']]
+print(y.value_counts())
 
 connection.close()
 
