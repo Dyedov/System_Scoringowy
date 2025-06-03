@@ -311,10 +311,37 @@ print('\n', x.tail())
 #     if isinstance(val, pd.DataFrame):
 #         print(name)
 
+dane_model_ml = x.copy()
+print('\nDANE_MODEL_ML (Nazwy Kolumn):')
+for col in dane_model_ml.columns:
+    print(col)
+
 print('\n-------------------------------------')
-y = x['SEGMENT']
-x = x[['SUMA_WYDATKÓW', 'RECENCY', 'DOCHOD', 'LICZBA_DZIECI']]
-print(y.value_counts())
+x_cechy = dane_model_ml[['SUMA_WYDATKÓW', 'RECENCY', 'DOCHOD', 'LICZBA_DZIECI']]
+y_segment = dane_model_ml['SEGMENT']
+print(y_segment.value_counts())
+
+from sklearn.model_selection import train_test_split
+
+x_train, x_test, y_train, y_test = train_test_split(
+    x_cechy,
+    y_segment,
+    test_size=0.2,
+    random_state=42,
+    stratify=y_segment
+)
+
+print('\n======')
+print('Liczba próbek treningowych:', len(x_train))
+print('Liczba próbek testowych:', len(x_test))
+print('\nRozkład klas w zbiorze treningowym:')
+print(y_train.value_counts(normalize=True))
+print('\nRozkład klas w zbiorze testowym:')
+print(y_test.value_counts(normalize=True))
+
+
+
+
 
 connection.close()
 
