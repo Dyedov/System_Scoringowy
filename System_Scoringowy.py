@@ -339,8 +339,20 @@ print(y_train.value_counts(normalize=True))
 print('\nRozkład klas w zbiorze testowym:')
 print(y_test.value_counts(normalize=True))
 
+from sklearn.ensemble import RandomForestClassifier
 
+model = RandomForestClassifier(random_state=42)
+model.fit(x_train, y_train)
+y_pred = model.predict(x_test)
 
+from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
+
+print('\n-------------------------------------------')
+print('Dokładność (accuracy):', accuracy_score(y_test, y_pred))
+print('\nRaport klasyfikacji:')
+print(classification_report(y_test, y_pred))
+print('\nMacierz pomyłek:')
+print(confusion_matrix(y_test, y_pred))
 
 
 connection.close()
