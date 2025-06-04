@@ -354,6 +354,22 @@ print(classification_report(y_test, y_pred))
 print('\nMacierz pomyłek:')
 print(confusion_matrix(y_test, y_pred))
 
+from sklearn.metrics import  ConfusionMatrixDisplay
+
+ConfusionMatrixDisplay.from_estimator(
+    model,
+    x_test,
+    y_test,
+    display_labels=model.classes_,
+    cmap='Blues',
+    xticks_rotation=45
+)
+
+plt.title('Macierz pomyłek z podpisami klas')
+plt.tight_layout()
+plt.show()
+
+
 
 connection.close()
 
