@@ -305,7 +305,7 @@ print('\n', x.tail())
 # plt.title('Udział segmentów klientów')
 # plt.axis('equal')
 # plt.show()
-
+#
 # print('\n---------------------------------')
 # for name, val in list(globals().items()):
 #     if isinstance(val, pd.DataFrame):
@@ -361,7 +361,7 @@ ConfusionMatrixDisplay.from_estimator(
     x_test,
     y_test,
     display_labels=model.classes_,
-    cmap='Blues',
+    cmap='Reds',
     xticks_rotation=45
 )
 
@@ -369,7 +369,26 @@ plt.title('Macierz pomyłek z podpisami klas')
 plt.tight_layout()
 plt.show()
 
+from sklearn.linear_model import LogisticRegression
 
+logreg_model = LogisticRegression(max_iter=1000, random_state=42)
+logreg_model.fit(x_train, y_train)
+y_pred_logreg = logreg_model.predict(x_test)
+
+print('Dokładność (accuracy)', accuracy_score(y_test, y_pred_logreg))
+print('\nRaport klasyfikacji:\n', classification_report(y_test, y_pred_logreg))
+
+cm_logreg = confusion_matrix(y_test, y_pred_logreg)
+
+segmenty = ['Lojalni rodzinni','Oszczędni aktywni','Pasywni','VIP']
+plt.figure(figsize=(6,5))
+sns.heatmap(cm_logreg, annot=True, fmt='d', cmap='Reds',
+            xticklabels=segmenty, yticklabels=segmenty)
+plt.xlabel('Predicted label')
+plt.ylabel('True Label')
+plt.title('Macierz pomyłek - Logistic Regression')
+plt.tight_layout()
+plt.show()
 
 connection.close()
 
