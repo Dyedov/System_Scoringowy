@@ -390,11 +390,22 @@ plt.title('Macierz pomyłek - Logistic Regression')
 plt.tight_layout()
 plt.show()
 
+from  sklearn.preprocessing import LabelEncoder
+
+le = LabelEncoder()
+y_train.enc = le.fit_transform(y_train)
+y_test_enc = le.transform(y_test)
+
 from xgboost import XGBClassifier
 
 xgb_model = XGBClassifier(use_label_encoder=False, eval_metric='mlogloss', random_state=42)
-xgb_model.fit(x_train, y_train)
+xgb_model.fit(x_train, y_train.enc)
 y_pred_xgb = xgb_model.predict(x_test)
+
+y_pred_xgb_labels = le.inverse_transform(y_pred_xgb)
+print(classification_report(y_test, y_pred_xgb_labels))
+cm_xgb = confusion_matrix(y_test, y_pred_xgb_labels)
+
 
 print('\n=== XGBoost ===')
 print('Dokładność (accuracy):', accuracy_score(y_test, y_pred_xgb))
