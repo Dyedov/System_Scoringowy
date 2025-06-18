@@ -400,19 +400,15 @@ from xgboost import XGBClassifier
 
 xgb_model = XGBClassifier(use_label_encoder=False, eval_metric='mlogloss', random_state=42)
 xgb_model.fit(x_train, y_train.enc)
+
 y_pred_xgb = xgb_model.predict(x_test)
-
 y_pred_xgb_labels = le.inverse_transform(y_pred_xgb)
-print(classification_report(y_test, y_pred_xgb_labels))
-cm_xgb = confusion_matrix(y_test, y_pred_xgb_labels)
-
 
 print('\n=== XGBoost ===')
-print('Dokładność (accuracy):', accuracy_score(y_test, y_pred_xgb))
-print('\nRaport klasyfikacji:\n', classification_report(y_test, y_pred_xgb))
+print('Dokładność (accuracy):', accuracy_score(y_test, y_pred_xgb_labels))
+print('\nRaport klasyfikacji:\n', classification_report(y_test, y_pred_xgb_labels))
 
-cm_xgb = confusion_matrix(y_test, y_pred_xgb)
-
+cm_xgb = confusion_matrix(y_test, y_pred_xgb_labels)
 segmenty = ['Lojalni rodzinni', 'Oszczędni aktywni', 'Pasywni', 'VIP' ]
 plt.figure(figsize=(6,5))
 sns.heatmap(cm_xgb, annot=True, fmt='d', cmap='Purples',
