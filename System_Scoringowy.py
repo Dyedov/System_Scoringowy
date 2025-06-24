@@ -419,6 +419,7 @@ plt.title('Macierz pomyłek - XGBoost')
 plt.tight_layout()
 plt.show()
 
+dane_model_ml.to_csv('dane_powerbi.csv', index=False, encoding='utf-8')
 
 
 connection.close()
