@@ -419,7 +419,35 @@ plt.title('Macierz pomyłek - XGBoost')
 plt.tight_layout()
 plt.show()
 
-dane_model_ml.to_csv('dane_powerbi.csv', index=False, encoding='utf-8')
+segmenty = {
+    0: 'Oszczędni aktywni',
+    1: 'Lojalni rodzinni',
+    2: 'Pasywni',
+    3: 'VIP'
+}
+
+x = df_scaled[['SUMA_WYDATKÓW', 'RECENCY', 'DOCHOD', 'LICZBA_DZIECI']].dropna().copy()
+x['ID'] = df_scaled.loc[x.index, 'ID'].values
+x['KLASTR'] = kmeans.labels_
+x['SEGMENT'] = x['KLASTR'].map(segmenty)
+
+df_export = df[df['ID'].isin(x['ID'])].copy()
+df_export = df_export.merge(
+    x[['ID', 'KLASTR', 'SEGMENT']],
+    on='ID',
+    how='left'
+)
+
+df_export = df_export[[
+    'ID', 'SUMA_WYDATKÓW', 'RECENCY', 'DOCHOD', 'LICZBA_DZIECI', 'KLASTR', 'SEGMENT'
+]]
+
+print('==== DANE w df_export ====')
+print(df_export.head())
+
+
+df_export.to_csv('dane_powerbi_niestandard.csv', index=False, sep=';', encoding='utf-8-sig')
+print('✅ Plik dane_powerbi_niestandard.csv został utworzony.')
 
 
 connection.close()
