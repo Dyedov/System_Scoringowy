@@ -446,8 +446,15 @@ print('==== DANE w df_export ====')
 print(df_export.head())
 
 
-df_export.to_csv('dane_powerbi_niestandard.csv', index=False, sep=';', encoding='utf-8-sig')
-print('✅ Plik dane_powerbi_niestandard.csv został utworzony.')
+# df_export.to_csv('dane_powerbi_niestandard.csv', index=False, sep=';', encoding='utf-8-sig')
+# print('✅ Plik dane_powerbi_niestandard.csv został utworzony.')
+
+import streamlit as st
+
+st.title('Dashboard: Segmentacja Klientów')
+dane_st = pd.read_csv('dane_powerbi_niestandard.csv', sep=';')
+st.subheader('Podgląd danych')
+st.dataframe(dane_st.head())
 
 
 connection.close()
