@@ -450,6 +450,7 @@ print(df_export.head())
 # print('✅ Plik dane_powerbi_niestandard.csv został utworzony.')
 
 import streamlit as st
+plt.style.use('dark_background')
 
 st.title('Dashboard: Segmentacja Klientów')
 dane_st = pd.read_csv('dane_powerbi_niestandard.csv', sep=';')
@@ -460,10 +461,17 @@ st.subheader('Średnie wydatki wg segmentu')
 srednie_wydatki = dane_st.groupby('SEGMENT')['SUMA_WYDATKÓW'].mean()
 
 fig1, ax1 = plt.subplots()
-ax1.bar(srednie_wydatki.index, srednie_wydatki.values)
-ax1.set_xlabel('Segment')
-ax1.set_ylabel('Średnie wydatki')
-ax1.set_title('Średnie wydatki klientów wg segmentu')
+ax1.bar(srednie_wydatki.index, srednie_wydatki.values, color='white')
+
+ax1.set_facecolor('#0e1117')
+fig1.patch.set_facecolor('#0e1117')
+ax1.tick_params(colors='white')
+ax1.spines['bottom'].set_color('white')
+ax1.spines['left'].set_color('white')
+ax1.set_xlabel('Segment', color='white')
+ax1.set_ylabel('Średnie wydatki', color='white')
+ax1.set_title('Średnie wydatki klientów wg segmentu', color='white')
+
 st.pyplot(fig1)
 
 st.subheader('Średni dochód wg segmentu')
