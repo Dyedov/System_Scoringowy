@@ -461,16 +461,21 @@ st.subheader('Średnie wydatki wg segmentu')
 srednie_wydatki = dane_st.groupby('SEGMENT')['SUMA_WYDATKÓW'].mean()
 
 fig1, ax1 = plt.subplots()
-ax1.bar(srednie_wydatki.index, srednie_wydatki.values, color='white')
+ax1.bar(srednie_wydatki.index, srednie_wydatki.values, color='#cfcfcf')
 
-ax1.set_facecolor('#0e1117')
-fig1.patch.set_facecolor('#0e1117')
-ax1.tick_params(colors='white')
-ax1.spines['bottom'].set_color('white')
-ax1.spines['left'].set_color('white')
-ax1.set_xlabel('Segment', color='white')
-ax1.set_ylabel('Średnie wydatki', color='white')
-ax1.set_title('Średnie wydatki klientów wg segmentu', color='white')
+streamlit_tlo = '#0e1117'
+tekst_kolor = '#cfcfcf'
+
+ax1.set_facecolor(streamlit_tlo)
+fig1.patch.set_facecolor(streamlit_tlo)
+
+ax1.tick_params(colors=tekst_kolor)
+ax1.spines['bottom'].set_color(tekst_kolor)
+ax1.spines['left'].set_color(tekst_kolor)
+
+ax1.set_xlabel('Segment', color=tekst_kolor)
+ax1.set_ylabel('Średnie wydatki', color=tekst_kolor)
+ax1.set_title('Średnie wydatki klientów wg segmentu', color=tekst_kolor)
 
 st.pyplot(fig1)
 
