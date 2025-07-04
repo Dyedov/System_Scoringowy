@@ -478,7 +478,7 @@ ax1.set_ylabel('Średnie wydatki', color=tekst_kolor)
 ax1.set_title('Średnie wydatki klientów wg segmentu', color=tekst_kolor)
 
 for i, v in enumerate(srednie_wydatki):
-    ax1.text(i, v / 2, f'{v:0f}', ha='center', va='center', color=streamlit_tlo, fontsize=10, fontweight='bold')
+    ax1.text(i, v / 2, f'{v:.0f}', ha='center', va='center', color=streamlit_tlo, fontsize=10, fontweight='bold')
 
 st.pyplot(fig1)
 
