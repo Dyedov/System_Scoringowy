@@ -473,9 +473,9 @@ ax1.tick_params(colors=tekst_kolor)
 ax1.spines['bottom'].set_color(tekst_kolor)
 ax1.spines['left'].set_color(tekst_kolor)
 
-ax1.set_xlabel('Segment', color=tekst_kolor)
-ax1.set_ylabel('Średnie wydatki', color=tekst_kolor)
-ax1.set_title('Średnie wydatki klientów wg segmentu', color=tekst_kolor)
+ax1.set_xlabel('Segment', fontsize=12, color=tekst_kolor)
+ax1.set_ylabel('Średnie wydatki', fontsize=12, color=tekst_kolor)
+ax1.set_title('Średnie wydatki klientów wg segmentu', fontsize=14, color=tekst_kolor)
 
 st.pyplot(fig1)
 
