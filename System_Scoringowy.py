@@ -445,82 +445,88 @@ df_export = df_export[[
 print('==== DANE w df_export ====')
 print(df_export.head())
 
-
 # df_export.to_csv('dane_powerbi_niestandard.csv', index=False, sep=';', encoding='utf-8-sig')
 # print('✅ Plik dane_powerbi_niestandard.csv został utworzony.')
+
+eksportowac = False
+if eksportowac:
+    df_export.to_csv('dane_powerbi_niestandard.csv', index=False, sep=';', encoding='utf-8-sig')
+    print('✅ Plik dane_powerbi_niestandard.csv został utworzony.')
 
 import streamlit as st
 plt.style.use('dark_background')
 
-st.title('Dashboard: Segmentacja Klientów')
-dane_st = pd.read_csv('dane_powerbi_niestandard.csv', sep=';')
-st.subheader('Podgląd danych')
-st.dataframe(dane_st.head())
+uruchom_dashboard = False
+if uruchom_dashboard:
+    st.title('Dashboard: Segmentacja Klientów')
+    dane_st = pd.read_csv('dane_powerbi_niestandard.csv', sep=';')
+    st.subheader('Podgląd danych')
+    st.dataframe(dane_st.head())
 
-st.subheader('Średnie wydatki wg segmentu')
-srednie_wydatki = dane_st.groupby('SEGMENT')['SUMA_WYDATKÓW'].mean()
+    st.subheader('Średnie wydatki wg segmentu')
+    srednie_wydatki = dane_st.groupby('SEGMENT')['SUMA_WYDATKÓW'].mean()
 
-fig1, ax1 = plt.subplots()
-ax1.bar(srednie_wydatki.index, srednie_wydatki.values, color='#cfcfcf')
+    fig1, ax1 = plt.subplots()
+    ax1.bar(srednie_wydatki.index, srednie_wydatki.values, color='#cfcfcf')
 
-streamlit_tlo = '#0e1117'
-tekst_kolor = '#cfcfcf'
+    streamlit_tlo = '#0e1117'
+    tekst_kolor = '#cfcfcf'
 
-ax1.set_facecolor(streamlit_tlo)
-fig1.patch.set_facecolor(streamlit_tlo)
+    ax1.set_facecolor(streamlit_tlo)
+    fig1.patch.set_facecolor(streamlit_tlo)
 
-ax1.tick_params(colors=tekst_kolor)
-ax1.spines['bottom'].set_color(tekst_kolor)
-ax1.spines['left'].set_color(tekst_kolor)
+    ax1.tick_params(colors=tekst_kolor)
+    ax1.spines['bottom'].set_color(tekst_kolor)
+    ax1.spines['left'].set_color(tekst_kolor)
 
-ax1.set_xlabel('Segment', color=tekst_kolor)
-ax1.set_ylabel('Średnie wydatki', color=tekst_kolor)
-ax1.set_title('Średnie wydatki klientów wg segmentu', color=tekst_kolor)
+    ax1.set_xlabel('Segment', color=tekst_kolor)
+    ax1.set_ylabel('Średnie wydatki', color=tekst_kolor)
+    ax1.set_title('Średnie wydatki klientów wg segmentu', color=tekst_kolor)
 
-for i, v in enumerate(srednie_wydatki):
-    ax1.text(i, v / 2, f'{v:.0f}', ha='center', va='center', color=streamlit_tlo, fontsize=10, fontweight='bold')
+    for i, v in enumerate(srednie_wydatki):
+        ax1.text(i, v / 2, f'{v:.0f}', ha='center', va='center', color=streamlit_tlo, fontsize=10, fontweight='bold')
 
-st.pyplot(fig1)
+    st.pyplot(fig1)
 
-st.subheader('Średni dochód wg segmentu')
-srednie_dochod = dane_st.groupby('SEGMENT')['DOCHOD'].mean()
+    st.subheader('Średni dochód wg segmentu')
+    srednie_dochod = dane_st.groupby('SEGMENT')['DOCHOD'].mean()
 
-fig2, ax2 = plt.subplots()
-ax2.bar(srednie_dochod.index, srednie_dochod.values)
-ax2.set_xlabel('Segment')
-ax2.set_ylabel('Średni dochód')
-ax2.set_title('Średni dochód klientów wg segmentu')
-st.pyplot(fig2)
+    fig2, ax2 = plt.subplots()
+    ax2.bar(srednie_dochod.index, srednie_dochod.values)
+    ax2.set_xlabel('Segment')
+    ax2.set_ylabel('Średni dochód')
+    ax2.set_title('Średni dochód klientów wg segmentu')
+    st.pyplot(fig2)
 
-st.subheader('Średnia liczba dzieci wg segmentu')
-srednie_dzieci = dane_st.groupby('SEGMENT')['LICZBA_DZIECI'].mean()
+    st.subheader('Średnia liczba dzieci wg segmentu')
+    srednie_dzieci = dane_st.groupby('SEGMENT')['LICZBA_DZIECI'].mean()
 
-fig3, ax3 = plt.subplots()
-ax3.bar(srednie_dzieci.index, srednie_dzieci.values)
-ax3.set_xlabel('Segment')
-ax3.set_ylabel('Średnia liczba dzieci')
-ax3.set_title('Średnia liczba dzieci wg segmentu')
-st.pyplot(fig3)
+    fig3, ax3 = plt.subplots()
+    ax3.bar(srednie_dzieci.index, srednie_dzieci.values)
+    ax3.set_xlabel('Segment')
+    ax3.set_ylabel('Średnia liczba dzieci')
+    ax3.set_title('Średnia liczba dzieci wg segmentu')
+    st.pyplot(fig3)
 
-st.subheader('Średnia recency wg segmentu')
-srednia_recency = dane_st.groupby('SEGMENT')['RECENCY'].mean()
+    st.subheader('Średnia recency wg segmentu')
+    srednia_recency = dane_st.groupby('SEGMENT')['RECENCY'].mean()
 
-fig4, ax4 = plt.subplots()
-ax4.bar(srednia_recency.index, srednia_recency.values)
-ax4.set_xlabel('Segment')
-ax4.set_ylabel('Średnia recency')
-ax4.set_title('Średnia recency klientów wg segmentu')
-st.pyplot(fig4)
+    fig4, ax4 = plt.subplots()
+    ax4.bar(srednia_recency.index, srednia_recency.values)
+    ax4.set_xlabel('Segment')
+    ax4.set_ylabel('Średnia recency')
+    ax4.set_title('Średnia recency klientów wg segmentu')
+    st.pyplot(fig4)
 
-st.subheader('Liczba klientów wg segmentu')
-liczba_klientow = dane_st['SEGMENT'].value_counts()
+    st.subheader('Liczba klientów wg segmentu')
+    liczba_klientow = dane_st['SEGMENT'].value_counts()
 
-fig5, ax5 = plt.subplots()
-ax5.bar(liczba_klientow.index, liczba_klientow.values)
-ax5.set_xlabel('Segment')
-ax5.set_ylabel('Liczba klientów')
-ax5.set_title('Liczba klientów wg segmentu')
-st.pyplot(fig5)
+    fig5, ax5 = plt.subplots()
+    ax5.bar(liczba_klientow.index, liczba_klientow.values)
+    ax5.set_xlabel('Segment')
+    ax5.set_ylabel('Liczba klientów')
+    ax5.set_title('Liczba klientów wg segmentu')
+    st.pyplot(fig5)
 
 
 connection.close()
