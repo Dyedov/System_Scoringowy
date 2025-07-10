@@ -77,7 +77,6 @@ srednie_wg_dzieci = (
     .round(2)
     .reset_index()
 )
-
 print('\n')
 print('Średnie wydatki wg liczby dzieci:')
 print(srednie_wg_dzieci)
@@ -98,6 +97,7 @@ srednie_wg_dochodu = (
 print('\nŚrednie wydatki wg przedziału dochodu:')
 print(srednie_wg_dochodu.head(10))
 
+# --- Podgląd nagłówków kolumn z różnych widoków
 print('\n')
 # print(list(online_offline_df.columns))
 print('Nagłówki kolumn VW_ONLINE_OFFLINE: ')
@@ -109,10 +109,14 @@ print('Nagłówki kolumn VW_ZAKUPY: ')
 for kolumny in zakupy_df.columns:
     print(kolumny)
 
+# --- Połączenie zakupów z kanałami (online/offline)
 df = pd.merge(zakupy_df, online_offline_df, on = 'ID')
+
+# --- Oznaczenie czy klient kupuje online/offline (binarnie: 1/0)
 df['ONLINE'] = (df['ZAKUPY_ONLINE'] > 0).astype(int)
 df['OFFLINE'] = ((df['ZAKUPY_STACJONARNE'] > 0) | (df['ZAKUPY_KATALOGOWE'] > 0)).astype(int)
 
+# --- Średnie wydatki według kanału zakupu (online/offline)
 srednie_online_offline = (
     df.groupby(['ONLINE', 'OFFLINE'])[
         ['WYDATKI_WINO', 'WYDATKI_OWOCE', 'WYDATKI_MIESO', 'WYDATKI_RYBY', 'WYDATKI_SLODYCZE', 'WYDATKI_ZLOTO']
@@ -121,16 +125,17 @@ srednie_online_offline = (
     .round(2)
     .reset_index()
 )
-
 print('\nŚrednie wydatki wg kanału zakupu (ONLINE vs OFFLINE):')
 print(srednie_online_offline)
 
-# print(list(kampanie_df.columns))
+# --- Podgląd nagłówków kolumn z widoku kampanii marketingowych
 print('\n')
+# print(list(kampanie_df.columns))
 print('Nagłówki kolumn VW_KAMPANIE: ')
 for kolumny in kampanie_df.columns:
     print(kolumny)
 
+# --- Wyliczenie sumy wydatków na wszystkie kategorie (kolumna SUMA_WYDATKÓW)
 df['SUMA_WYDATKÓW'] = (
     df['WYDATKI_WINO']
     + df['WYDATKI_OWOCE']
@@ -138,47 +143,39 @@ df['SUMA_WYDATKÓW'] = (
     + df['WYDATKI_RYBY']
     + df['WYDATKI_SLODYCZE']
     + df['WYDATKI_ZLOTO']
-
 )
 
+# --- Oznaczenie klientów VIP (top 10% pod względem wydatków)
 prog_vip = df['SUMA_WYDATKÓW'].quantile(0.90)
 df['VIP'] = (df['SUMA_WYDATKÓW'] >= prog_vip).astype(int)
 
+# --- Oznaczenie klientów pasywnych (bottom 10% pod względem wydatków)
 prog_pasywny = df['SUMA_WYDATKÓW'].quantile(0.10)
 df['PASYWNY'] = (df['SUMA_WYDATKÓW'] <= prog_pasywny).astype(int)
 
+# --- Dołączenie do danych odpowiedzi klienta na kampanię marketingową (czy zareagował/promocyjny)
 df = pd.merge(df, kampanie_df[['ID', 'ODPOWIEDZ_NA_KAMPANIE']], on='ID', how='left')
 df['PROMOCYJNY'] = df['ODPOWIEDZ_NA_KAMPANIE'].fillna(0).astype(int)
+
+# --- Dołączenie kolumny recency (ile dni od ostatniego zakupu)
 df = pd.merge(df, recency_df, on='ID', how='left')
 
-# print('\nPrzykładowi klienci z etykietami:')
+# --- Podgląd wybranych kolumn — przykładowi klienci z etykietami
 print('\nPodsumowanie końcowe (z kolumną RECENCY):')
 print(df[['ID', 'SUMA_WYDATKÓW', 'VIP', 'PASYWNY', 'PROMOCYJNY', 'RECENCY']].head(10))
 
+# --- Podgląd recency_df (dane surowe)
 print('\nrecency_df HEAD:')
 print(recency_df.head())
 print('\nKolumny recency_df:', recency_df.columns.tolist())
 
+# --- Liczby klientów w każdej grupie
 print('\nLiczba VIP:', df['VIP'].sum())
 print('Liczba pasywnych:', df['PASYWNY'].sum())
 print('Liczba promocyjnych:', df['PROMOCYJNY'].sum())
 
-# print(f'\nLiczba wszystkich klientów: {len(df)}')
-# print(f'10% klientów to: {round(len(df) * 0.10)}')
-
-# print('\nNagłówki kolumn VW_ZAKUPY: ')
-# for kolumny in zakupy_df.columns:
-#     print(kolumny)
-# print('Nagłówki kolumn VW_KAMPANIE: ')
-# for kolumny in kampanie_df.columns:
-#     print(kolumny)
-# print('Nagłówki kolumn VW_DEMOGRAFIA: ')
-# for kolumny in demografia_df.columns:
-#     print(kolumny)
-# print('Nagłówki kolumn VW_ONLINE_OFFLINE: ')
-# for kolumny in online_offline_df.columns:
-#     print(kolumny)
-#
+# --- Wyświetlenie nazw kolumn w każdym DataFrame (wszystkie główne widoki) - widok Listy
+# print('\nWyświetlenie nazw kolumn w każdym DataFrame (wszystkie główne widoki)')
 # for nazwa, df in {
 # "VW_ZAKUPY": zakupy_df,
 #     "VW_KAMPANIE": kampanie_df,
@@ -187,24 +184,27 @@ print('Liczba promocyjnych:', df['PROMOCYJNY'].sum())
 # }.items():
 #     print(f'\nNagłówki kolumn {nazwa}:')
 #     print(df.columns.tolist())
-#     print()
 
+# --- Wyświetlenie nazw kolumn w każdym DataFrame (wszystkie główne widoki) - widok Kolumny
+print('\nWyświetlenie nazw kolumn w każdym DataFrame (wszystkie główne widoki)')
 dataframes = {
 "VW_ZAKUPY": zakupy_df,
     "VW_KAMPANIE": kampanie_df,
     "VW_DEMOGRAFIA": demografia_df,
     "VW_ONLINE_OFFLINE": online_offline_df
 }
-
 for nazwa, df in dataframes.items():
     print(f'\nNagłówki kolumn {nazwa}:')
     for kolumna in df.columns:
         print(f'- {kolumna}')
 
+# --- Połączenie wszystkich danych razem (zakupy, demografia, online_offline, kampanie, recency)
 df = pd.merge(zakupy_df, demografia_df, on='ID', how='left')
 df = pd.merge(df, online_offline_df, on='ID', how='left')
 df = pd.merge(df, kampanie_df[['ID', 'ODPOWIEDZ_NA_KAMPANIE']], on='ID', how='left')
 df = pd.merge(df, recency_df, on='ID', how='left')
+
+# --- Ponowne wyliczenie sumy wydatków (na potrzeby klasteryzacji)
 df['SUMA_WYDATKÓW'] = (
     df['WYDATKI_WINO']
     + df['WYDATKI_OWOCE']
@@ -212,24 +212,25 @@ df['SUMA_WYDATKÓW'] = (
     + df['WYDATKI_RYBY']
     + df['WYDATKI_SLODYCZE']
     + df['WYDATKI_ZLOTO']
-
 )
+
+# --- Liczba dzieci (maksimum z dwóch kolumn)
 df['LICZBA_DZIECI'] = df[['DZIECI_W_DOMU', 'NASTOLATKI_W_DOMU']].max(axis=1)
 
+# --- Podgląd wszystkich kolumn w df (ostateczny "master" DataFrame na ten etap)
+# print('\nKolumny w df:', df.columns.tolist())
 print('\nKolumny w df:')
 for col in df.columns:
     print(col)
 
+from sklearn.preprocessing import StandardScaler  # StandardScaler – do standaryzacji cech przed klasteryzacją i ML (średnia=0, std=1)
+
+# --- Lista cech używanych do klasteryzacji i ML
 cechy = ['SUMA_WYDATKÓW', 'RECENCY', 'DOCHOD', 'LICZBA_DZIECI']
 
-from sklearn.preprocessing import StandardScaler
-scaler = StandardScaler()
+scaler = StandardScaler()  # Standaryzacja (średnia=0, std=1), wymagane przez większość algorytmów ML
 
-# print('\nKolumny w df:', df.columns.tolist())
-# print('\nKolumny w df:')
-# for col in df.columns:
-#     print(col)
-
+# --- Standaryzacja wybranych cech, zachowanie kolumny ID
 df_scaled = scaler.fit_transform(df[cechy])
 df_scaled = pd.DataFrame(df_scaled, columns=cechy)
 df_scaled['ID'] = df['ID'].values
@@ -237,6 +238,7 @@ df_scaled['ID'] = df['ID'].values
 print('\nDane po standaryzacji (pierwsze 5 wierszy):')
 print(df_scaled.head())
 
+# --- Sprawdzanie wersji bibliotek
 # try:
 #     import sklearn
 #     import matplotlib
@@ -245,21 +247,25 @@ print(df_scaled.head())
 # except ImportError as e:
 #     print('Brakuje biblioteki:', e.name)
 
+# --- Podgląd nazw kolumn w df po merge/przetwarzaniu
 print('\nKolumny w df:')
 for col in df.columns:
     print(col)
 
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans  # KMeans – do klasteryzacji/segmentacji klientów (grupowania klientów na segmenty na podstawie cech)
 
+# --- Przygotowanie danych do klasteryzacji (.dropna() - usuwa wiersze z brakami danych (NaN))
 x = df_scaled[['SUMA_WYDATKÓW', 'RECENCY', 'DOCHOD', 'LICZBA_DZIECI']].dropna()
+
+# --- Metoda łokcia – wybór liczby klastrów na podstawie inercji (suma kwadratów odległości do centroidów)
 inercja = []
 zakres_klastrow = range(1, 11)
-
 for k in zakres_klastrow:
     kmeans = KMeans(n_clusters=k, random_state=42)
     kmeans.fit(x)
     inercja.append(kmeans.inertia_)
 
+# --- Wykres łokcia do oceny liczby klastrów
 # plt.figure(figsize=(8, 5))
 # plt.plot(zakres_klastrow, inercja, marker='o')
 # plt.xlabel('Liczba klastrów (k)')
@@ -268,28 +274,34 @@ for k in zakres_klastrow:
 # plt.grid(True)
 # plt.show()
 
+# --- Finalna klasteryzacja (wybrano 4 klastry na podstawie metody łokcia)
 kmeans = KMeans(n_clusters=4, random_state=42)
 kmeans.fit(x)
 x['KLASTR'] = kmeans.labels_
+
+# --- Podsumowanie: średnie wartości cech w każdym klastrze
 grupy = x.groupby('KLASTR').mean().reset_index()
 print('\nKlasteryzacja x = df_scaled:')
 print(grupy)
 print()
 
+# --- Nazwy segmentów biznesowych przypisane do klastrów (ręcznie zmapowane)
 segmenty = {
     0: 'Oszczędni aktywni',
     1: 'Lojalni rodzinni',
     2: 'Pasywni',
     3: 'VIP'
 }
-
 x['SEGMENT'] = x['KLASTR'].map(segmenty)
+
+# --- Liczba klientów w każdym segmencie
 print(x[['KLASTR', 'SEGMENT']].value_counts().reset_index(name='liczba_klientów'))
 print()
 
 podsumowanie_segmentow = x['SEGMENT'].value_counts().reset_index(name='LICZBA KLIENTÓW').rename(columns={'index': 'SEGMENT'})
 print(podsumowanie_segmentow)
 
+# --- Wykresy udziału segmentów (bar/pie chart)
 # segmenty_liczba = x['SEGMENT'].value_counts()
 # segmenty_liczba.plot(kind='bar', color='skyblue')
 # plt.title('Liczba klientów w segmentach')
@@ -299,10 +311,13 @@ print(podsumowanie_segmentow)
 # plt.tight_layout()
 # plt.show()
 
+# --- Podgląd wyników klasteryzacji
 print('\n', x.columns)
 print('\n', x.head())
 print('\n', x.tail())
 
+
+# --- Pie chart udziałów segmentów
 # plt.figure(figsize=(8, 8))
 # plt.pie(
 #     podsumowanie_segmentow['LICZBA KLIENTÓW'],
@@ -314,20 +329,23 @@ print('\n', x.tail())
 # plt.title('Udział segmentów klientów')
 # plt.axis('equal')
 # plt.show()
-#
-# print('\n---------------------------------')
+
+# --- # Wyświetlenie nazw wszystkich DataFrame'ów zdefiniowanych w programie (diagnostyka/debugowanie)
+# print('\nWyświetlenie wszystkich DataFrame'ów')
 # for name, val in list(globals().items()):
 #     if isinstance(val, pd.DataFrame):
 #         print(name)
 
+# --- Przygotowanie danych do modelowania ML (zachowanie klastrów i segmentów)
 dane_model_ml = x.copy()
 print('\nDANE_MODEL_ML (Nazwy Kolumn):')
 for col in dane_model_ml.columns:
     print(col)
+print()
 
-print('\n-------------------------------------')
-x_cechy = dane_model_ml[['SUMA_WYDATKÓW', 'RECENCY', 'DOCHOD', 'LICZBA_DZIECI']]
-y_segment = dane_model_ml['SEGMENT']
+x_cechy = dane_model_ml[['SUMA_WYDATKÓW', 'RECENCY', 'DOCHOD', 'LICZBA_DZIECI']]  # cechy wejściowe
+y_segment = dane_model_ml['SEGMENT']                                              # etykieta do predykcji (segment)
+
 print(y_segment.value_counts())
 
 from sklearn.model_selection import train_test_split
