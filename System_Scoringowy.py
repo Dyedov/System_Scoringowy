@@ -1,18 +1,18 @@
-import oracledb
-import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-from scipy.cluster.vq import kmeans
-from scipy.ndimage import rotate
+import oracledb                    # Biblioteka do łączenia się z bazą Oracle Database.
+import pandas as pd                # Pandas – do przetwarzania i analizy danych.
+import seaborn as sns              # Seaborn – do wizualizacji macierzy korelacji oraz macierzy pomyłek.
+import matplotlib.pyplot as plt    # Matplotlib – do wykresów.
 
-pd.set_option('display.max_columns', None)
+pd.set_option('display.max_columns', None)    # Wyświetlanie wszystkich kolumn w dataframe'ach.
 
+# --- Połączenie z bazą danych Oracle (lokalnie, użytkownik scoring_user)
 connection = oracledb.connect(
     user = 'scoring_user',
     password = 'haslo123',
     dsn = 'localhost/XEPDB1'
 )
 
+# --- Przykładowe użycie kursora Oracle (można sprawdzić ile jest wierszy itp.)
 # with connection.cursor() as cursor:
 #     cursor.execute('SELECT COUNT(*) FROM customer_data')
 #     liczba = cursor.fetchone()[0]
@@ -21,48 +21,56 @@ connection = oracledb.connect(
 #     cursor.execute('SELECT * FROM customer_data FETCH FIRST 5 ROWS ONLY')
 #     for row in cursor:
 #         print(row)
-wszystkie_widoki = pd.read_sql('SELECT view_name FROM user_views', con=connection)
 
+# --- Wylistowanie wszystkich widoków w bazie danych (np. VW_ZAKUPY itd.)
+wszystkie_widoki = pd.read_sql('SELECT view_name FROM user_views', con=connection)
 print('Widoki w bazie danych:')
 print(wszystkie_widoki)
 
-zakupy_df = pd.read_sql('SELECT * FROM VW_ZAKUPY', con=connection)
-kampanie_df = pd.read_sql('SELECT * FROM VW_KAMPANIE', con=connection)
-demografia_df = pd.read_sql('SELECT * FROM VW_DEMOGRAFIA', con=connection)
-online_offline_df = pd.read_sql('SELECT * FROM VW_ONLINE_OFFLINE', con=connection)
-recency_df = pd.read_sql('SELECT ID, RECENCY FROM CUSTOMER_DATA', con=connection)
+# --- Wczytanie głównych widoków do DataFrame (każdy widok to osobny zbiór danych)
+zakupy_df = pd.read_sql('SELECT * FROM VW_ZAKUPY', con=connection)                  # Zakupy klientów
+kampanie_df = pd.read_sql('SELECT * FROM VW_KAMPANIE', con=connection)              # Udział/reakcja w kampaniach marketingowych
+demografia_df = pd.read_sql('SELECT * FROM VW_DEMOGRAFIA', con=connection)          # Dane demograficzne (rok urodzenia, dzieci itd.)
+online_offline_df = pd.read_sql('SELECT * FROM VW_ONLINE_OFFLINE', con=connection)  # Kanały zakupów (online/offline)
+recency_df = pd.read_sql('SELECT ID, RECENCY FROM CUSTOMER_DATA', con=connection)   # Dni od ostatniego zakupu
 
+# --- Podgląd danych z widoków
 # print(zakupy_df.head(11))
 # print(kampanie_df.head())
 # print(demografia_df.head())
 # print(online_offline_df.head())
 
+# --- Wyznaczanie korelacji wydatków + wizualizacja heatmapy (analiza eksploracyjna)
 # wydatki_kolumny = zakupy_df.drop(columns=['ID'])
 # korelacje = wydatki_kolumny.corr()
-#
 # plt.figure(figsize=(10,8))
 # sns.heatmap(korelacje, annot=True, cmap='coolwarm', fmt='.2f')
 # plt.title("Heatmapa korelacji wydatków")
 # plt.tight_layout()
 # plt.show()
 
+# --- Łączenie danych z kilku widoków (jeden rekord = jeden klient, zawiera info o wydatkach, demografii, kampaniach, kanale zakupu)
 dane = zakupy_df.merge(demografia_df, on='ID')
 dane = dane.merge(kampanie_df, on='ID')
 dane = dane.merge(online_offline_df, on='ID')
-
 print(dane.head())
 
+# --- Wyliczanie wieku klientów (rok analizy = 2025)
 dane['WIEK'] = 2025 - dane['ROK_URODZENIA']
+
+# --- Obliczanie średnich wydatków na wybrane kategorie w zależności od wieku
 srednie_wg_wieku = dane.groupby('WIEK')[['WYDATKI_WINO', 'WYDATKI_ZLOTO', 'WYDATKI_SLODYCZE']].mean().reset_index()
-# srednie_wg_wieku = srednie_wg_wieku.sort_index(ascending=False)
+# srednie_wg_wieku = srednie_wg_wieku.sort_index(ascending=False)  # --- Opcjonalnie: sortowanie wg wieku malejąco
 srednie_wg_wieku = srednie_wg_wieku.round(2)
 
 print('\n')
 print('Średnie wydatki wg wieku:')
 print(srednie_wg_wieku.head())
 
-# dane['DZIECI'] = dane['DZIECI_W_DOMU'] + dane['NASTOLATKI_W_DOMU']
+# --- Liczba dzieci (tutaj jako maksimum z dwóch kolumn: dzieci w domu i nastolatki w domu)
 dane['DZIECI'] = dane[['DZIECI_W_DOMU', 'NASTOLATKI_W_DOMU']].max(axis=1)
+
+# --- Średnie wydatki według liczby dzieci
 srednie_wg_dzieci = (
     dane.groupby('DZIECI')[['WYDATKI_WINO','WYDATKI_ZLOTO', 'WYDATKI_SLODYCZE']]
     .mean()
@@ -75,17 +83,18 @@ print('Średnie wydatki wg liczby dzieci:')
 print(srednie_wg_dzieci)
 # print(dane['DZIECI'].value_counts())
 
+# --- Odfiltrowanie klientów bez dochodu, binning dochodu co 10 tys.
 dane = dane[dane['DOCHOD'].notna()]
 dane['PRZEDZIAL_DOCHODU'] = (dane['DOCHOD'] // 10000) * 10000
 dane = dane[dane['PRZEDZIAL_DOCHODU'] > 0]
 
+# --- Średnie wydatki wg przedziału dochodu
 srednie_wg_dochodu = (
     dane.groupby('PRZEDZIAL_DOCHODU')[['WYDATKI_WINO','WYDATKI_ZLOTO', 'WYDATKI_SLODYCZE']]
     .mean()
     .round(2)
     .reset_index()
 )
-
 print('\nŚrednie wydatki wg przedziału dochodu:')
 print(srednie_wg_dochodu.head(10))
 
