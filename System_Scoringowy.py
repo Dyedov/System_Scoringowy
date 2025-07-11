@@ -285,7 +285,7 @@ print('\nKlasteryzacja x = df_scaled:')
 print(grupy)
 print()
 
-# --- Nazwy segmentów biznesowych przypisane do klastrów (ręcznie zmapowane)
+# --- Nazwy segmentów przypisane do klastrów (ręcznie zmapowane)
 segmenty = {
     0: 'Oszczędni aktywni',
     1: 'Lojalni rodzinni',
@@ -474,8 +474,8 @@ if macierz_pomylek_XGBoost:
     plt.tight_layout()
     plt.show()
 
-input('\nKliknij Enter, aby kontynuować...')
-
+# --- Przygotowanie finalnego zbioru do eksportu (Power BI, dashboard)
+# 1. Mapping numerów klastrów na nazwy segmentów
 segmenty = {
     0: 'Oszczędni aktywni',
     1: 'Lojalni rodzinni',
@@ -483,6 +483,7 @@ segmenty = {
     3: 'VIP'
 }
 
+# 2. DataFrame x – tylko klienci bez braków danych, z numerem klastra i segmentem
 x = df_scaled[['SUMA_WYDATKÓW', 'RECENCY', 'DOCHOD', 'LICZBA_DZIECI']].dropna().copy()
 x['ID'] = df_scaled.loc[x.index, 'ID'].values
 x['KLASTR'] = kmeans.labels_
@@ -499,6 +500,7 @@ df_export = df_export[[
     'ID', 'SUMA_WYDATKÓW', 'RECENCY', 'DOCHOD', 'LICZBA_DZIECI', 'KLASTR', 'SEGMENT'
 ]]
 
+print()
 print('==== DANE w df_export ====')
 print(df_export.head())
 
