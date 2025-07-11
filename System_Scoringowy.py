@@ -348,8 +348,9 @@ y_segment = dane_model_ml['SEGMENT']                                            
 
 print(y_segment.value_counts())
 
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split  # Funkcja z biblioteki scikit-learn. Podział danych na train/test do uczenia i testowania modeli ML
 
+# --- Podział na zbiory treningowy i testowy (80/20), stratified – zachowanie proporcji segmentów
 x_train, x_test, y_train, y_test = train_test_split(
     x_cechy,
     y_segment,
@@ -358,7 +359,8 @@ x_train, x_test, y_train, y_test = train_test_split(
     stratify=y_segment
 )
 
-print('\n======')
+print('\n- Informacje o liczbie próbek i rozkładzie klas w zbiorach treningowym i testowym -')
+print('\nLiczba próbek w zbiorach train/test:')
 print('Liczba próbek treningowych:', len(x_train))
 print('Liczba próbek testowych:', len(x_test))
 print('\nRozkład klas w zbiorze treningowym:')
@@ -366,85 +368,113 @@ print(y_train.value_counts(normalize=True))
 print('\nRozkład klas w zbiorze testowym:')
 print(y_test.value_counts(normalize=True))
 
-from sklearn.ensemble import RandomForestClassifier
+# --- Random Forest Classifier – model klasyfikacyjny (biblioteka: scikit-learn)
+from sklearn.ensemble import RandomForestClassifier  # Random Forest – klasyfikator ML
 
 model = RandomForestClassifier(random_state=42)
 model.fit(x_train, y_train)
 y_pred = model.predict(x_test)
 
-from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
+# --- Ewaluacja (ocena skuteczności) modelu ML (raport, dokładność, macierz pomyłek)
+from sklearn.metrics import classification_report  # classification_report - podsumowanie (wyników klasyfikacji) skuteczności modelu (precyzja, recall, F1-score) dla każdej klasy/segmentu
+from sklearn.metrics import accuracy_score         # accuracy_score – sprawdza, jaki procent przewidywań był poprawny (ile razy model trafił w prawidłowy segment)
+from sklearn.metrics import confusion_matrix       # confusion_matrix – macierz pomyłek (pokazuje, które klasy (segmenty) zostały pomylone (są mylone z którymi))
 
-print('\n-------------------------------------------')
-print('Dokładność (accuracy):', accuracy_score(y_test, y_pred))
+print('\n- Wyświetlenie wyników oceny skuteczności modelu Random Forest -')
+print('\nDokładność (accuracy):', accuracy_score(y_test, y_pred))
 print('\nRaport klasyfikacji:')
 print(classification_report(y_test, y_pred))
-print('\nMacierz pomyłek:')
+print('Macierz pomyłek:')
 print(confusion_matrix(y_test, y_pred))
 
-from sklearn.metrics import  ConfusionMatrixDisplay
+# --- Wizualizacja macierzy pomyłek (Random Forest)
+from sklearn.metrics import  ConfusionMatrixDisplay  # ConfusionMatrixDisplay - graficzne wyświetlenie macierzy pomyłek dla wyników wybranego modelu ML
 
-ConfusionMatrixDisplay.from_estimator(
-    model,
-    x_test,
-    y_test,
-    display_labels=model.classes_,
-    cmap='Reds',
-    xticks_rotation=45
-)
+macierz_pomylek_Random_Forest = False  # True - włączyć / False - wyłączyć. Graficzne wyświetlenie macierzy pomyłek ConfusionMatrixDisplay
 
-plt.title('Macierz pomyłek z podpisami klas')
-plt.tight_layout()
-plt.show()
+if macierz_pomylek_Random_Forest:
+    ConfusionMatrixDisplay.from_estimator(
+        model,
+        x_test,
+        y_test,
+        display_labels=model.classes_,
+        cmap='Reds',
+        xticks_rotation=45
+    )
+    plt.title('Macierz pomyłek Random Forest')
+    plt.tight_layout()
+    plt.show()
 
-from sklearn.linear_model import LogisticRegression
+# --- Logistic Regression – alternatywny model klasyfikacyjny (biblioteka: scikit-learn)
+from sklearn.linear_model import LogisticRegression  # Logistic Regression – klasyfikator ML
 
 logreg_model = LogisticRegression(max_iter=1000, random_state=42)
 logreg_model.fit(x_train, y_train)
 y_pred_logreg = logreg_model.predict(x_test)
 
-print('Dokładność (accuracy)', accuracy_score(y_test, y_pred_logreg))
-print('\nRaport klasyfikacji:\n', classification_report(y_test, y_pred_logreg))
-
+print('\n- Wyświetlenie wyników oceny skuteczności modelu Logistic Regression -')
+print('\nDokładność (accuracy)', accuracy_score(y_test, y_pred_logreg))
+print('\nRaport klasyfikacji:')
+print(classification_report(y_test, y_pred_logreg))
+print('Macierz pomyłek:')
 cm_logreg = confusion_matrix(y_test, y_pred_logreg)
+print(cm_logreg)
 
-segmenty = ['Lojalni rodzinni','Oszczędni aktywni','Pasywni','VIP']
-plt.figure(figsize=(6,5))
-sns.heatmap(cm_logreg, annot=True, fmt='d', cmap='Reds',
-            xticklabels=segmenty, yticklabels=segmenty)
-plt.xlabel('Predicted label')
-plt.ylabel('True Label')
-plt.title('Macierz pomyłek - Logistic Regression')
-plt.tight_layout()
-plt.show()
+# --- Wizualizacja macierzy pomyłek (Logistic Regression)
+macierz_pomylek_Logistic_Regression = False  # True - włączyć / False - wyłączyć. Graficzne wyświetlenie macierzy pomyłek Seaborn (sns.heatmap)
 
-from  sklearn.preprocessing import LabelEncoder
+if macierz_pomylek_Logistic_Regression:
+    segmenty = ['Lojalni rodzinni','Oszczędni aktywni','Pasywni','VIP']
+    plt.figure(figsize=(6,5))
+    sns.heatmap(cm_logreg, annot=True, fmt='d', cmap='Reds',
+                xticklabels=segmenty, yticklabels=segmenty)
+    plt.xlabel('Predicted label')
+    plt.ylabel('True Label')
+    plt.title('Macierz pomyłek Logistic Regression')
+    plt.tight_layout()
+    plt.show()
+
+# --- Przygotowanie etykiet do XGBoost (numeryczne)
+from  sklearn.preprocessing import LabelEncoder  # LabelEncoder – kodowanie etykiet (segmentów) na liczby całkowite (wymagane przez XGBoost)
 
 le = LabelEncoder()
 y_train.enc = le.fit_transform(y_train)
 y_test_enc = le.transform(y_test)
 
-from xgboost import XGBClassifier
+# --- XGBoost – model klasyfikacyjny, bardzo wydajny do predykcji segmentu (biblioteka: xgboost)
+from xgboost import XGBClassifier  # XGBClassifier – klasyfikator ML
 
-xgb_model = XGBClassifier(use_label_encoder=False, eval_metric='mlogloss', random_state=42)
+# --- Trenowanie modelu XGBoost na danych treningowych
+xgb_model = XGBClassifier(eval_metric='mlogloss', random_state=42)
 xgb_model.fit(x_train, y_train.enc)
 
+# --- Predykcja segmentów na danych testowych (XGBoost)
 y_pred_xgb = xgb_model.predict(x_test)
-y_pred_xgb_labels = le.inverse_transform(y_pred_xgb)
+y_pred_xgb_labels = le.inverse_transform(y_pred_xgb)  # Zamiana przewidywanych etykiet numerycznych z powrotem na kategorie
 
-print('\n=== XGBoost ===')
-print('Dokładność (accuracy):', accuracy_score(y_test, y_pred_xgb_labels))
-print('\nRaport klasyfikacji:\n', classification_report(y_test, y_pred_xgb_labels))
-
+print('\n- Wyświetlenie wyników oceny skuteczności modelu XGBoost -')
+print('\nDokładność (accuracy):', accuracy_score(y_test, y_pred_xgb_labels))
+print('\nRaport klasyfikacji:')
+print(classification_report(y_test, y_pred_xgb_labels))
+print('Macierz pomyłek:')
 cm_xgb = confusion_matrix(y_test, y_pred_xgb_labels)
-segmenty = ['Lojalni rodzinni', 'Oszczędni aktywni', 'Pasywni', 'VIP' ]
-plt.figure(figsize=(6,5))
-sns.heatmap(cm_xgb, annot=True, fmt='d', cmap='Purples',
-            xticklabels=segmenty, yticklabels=segmenty)
-plt.xlabel('Predicted label')
-plt.ylabel('True label')
-plt.title('Macierz pomyłek - XGBoost')
-plt.tight_layout()
-plt.show()
+print(cm_xgb)
+
+# --- Wizualizacja macierzy pomyłek (Logistic Regression)
+macierz_pomylek_XGBoost = True  # True - włączyć / False - wyłączyć. Graficzne wyświetlenie macierzy pomyłek Seaborn (sns.heatmap)
+
+if macierz_pomylek_XGBoost:
+    segmenty = ['Lojalni rodzinni', 'Oszczędni aktywni', 'Pasywni', 'VIP' ]
+    plt.figure(figsize=(6,5))
+    sns.heatmap(cm_xgb, annot=True, fmt='d', cmap='Purples',
+                xticklabels=segmenty, yticklabels=segmenty)
+    plt.xlabel('Predicted label')
+    plt.ylabel('True label')
+    plt.title('Macierz pomyłek XGBoost')
+    plt.tight_layout()
+    plt.show()
+
+input('\nKliknij Enter, aby kontynuować...')
 
 segmenty = {
     0: 'Oszczędni aktywni',
