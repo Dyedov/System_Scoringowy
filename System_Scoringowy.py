@@ -460,7 +460,7 @@ print('Macierz pomyłek:')
 cm_xgb = confusion_matrix(y_test, y_pred_xgb_labels)
 print(cm_xgb)
 
-# --- Wizualizacja macierzy pomyłek (Logistic Regression)
+# --- Wizualizacja macierzy pomyłek (XGBoost)
 macierz_pomylek_XGBoost = True  # True - włączyć / False - wyłączyć. Graficzne wyświetlenie macierzy pomyłek Seaborn (sns.heatmap)
 
 if macierz_pomylek_XGBoost:
@@ -474,8 +474,7 @@ if macierz_pomylek_XGBoost:
     plt.tight_layout()
     plt.show()
 
-# --- Przygotowanie finalnego zbioru do eksportu (Power BI, dashboard)
-# 1. Mapping numerów klastrów na nazwy segmentów
+#  --- Mapping numerów klastrów na nazwy segmentów (etykiety)
 segmenty = {
     0: 'Oszczędni aktywni',
     1: 'Lojalni rodzinni',
@@ -483,73 +482,81 @@ segmenty = {
     3: 'VIP'
 }
 
-# 2. DataFrame x – tylko klienci bez braków danych, z numerem klastra i segmentem
+# --- Przygotowanie DataFrame x: tylko cechy do klasteryzacji, bez braków danych
 x = df_scaled[['SUMA_WYDATKÓW', 'RECENCY', 'DOCHOD', 'LICZBA_DZIECI']].dropna().copy()
-x['ID'] = df_scaled.loc[x.index, 'ID'].values
-x['KLASTR'] = kmeans.labels_
-x['SEGMENT'] = x['KLASTR'].map(segmenty)
+x['ID'] = df_scaled.loc[x.index, 'ID'].values  # Przywrócenie ID do danych po dropna
 
-df_export = df[df['ID'].isin(x['ID'])].copy()
+# --- Przypisanie numeru klastra i etykiety segmentu każdemu klientowi (po klasteryzacji KMeans)
+x['KLASTR'] = kmeans.labels_              # Numer przypisanego klastra
+x['SEGMENT'] = x['KLASTR'].map(segmenty)  # Opisowa nazwa segmentu (mapping słownika)
+
+# --- Połączenie segmentacji z oryginalnymi (niestandaryzowanymi) danymi klienta
+df_export = df[df['ID'].isin(x['ID'])].copy()  # Tylko klienci bez braków (zaklasteryzowani)
 df_export = df_export.merge(
     x[['ID', 'KLASTR', 'SEGMENT']],
     on='ID',
     how='left'
 )
 
+# --- Wybór tylko najważniejszych kolumn do eksportu/raportu (do Power BI, dashboardów)
 df_export = df_export[[
     'ID', 'SUMA_WYDATKÓW', 'RECENCY', 'DOCHOD', 'LICZBA_DZIECI', 'KLASTR', 'SEGMENT'
 ]]
 
+# --- Podgląd finalnych danych do eksportu
 print()
 print('==== DANE w df_export ====')
 print(df_export.head())
 
-# df_export.to_csv('dane_powerbi_niestandard.csv', index=False, sep=';', encoding='utf-8-sig')
-# print('✅ Plik dane_powerbi_niestandard.csv został utworzony.')
-
+# --- Eksport do CSV (jeśli eksportowac = True)
 eksportowac = False
 if eksportowac:
     df_export.to_csv('dane_powerbi_niestandard.csv', index=False, sep=';', encoding='utf-8-sig')
-    print('✅ Plik dane_powerbi_niestandard.csv został utworzony.')
+    print('Plik dane_powerbi_niestandard.csv został utworzony.')
 
+# --- Import Streamlit (do tworzenia dashboardu webowego) i ustawienie ciemnego stylu wykresów
 import streamlit as st
 plt.style.use('dark_background')
 
+# --- Flaga do uruchomienia dashboardu (True – uruchom, False – nie pokazuj)
 uruchom_dashboard = False
 if uruchom_dashboard:
+
+    # --- Ustawienia i nagłówek dashboardu
     st.title('Dashboard: Segmentacja Klientów')
+
+    # --- Wczytanie danych do dashboardu z pliku CSV
     dane_st = pd.read_csv('dane_powerbi_niestandard.csv', sep=';')
+
+    # --- Podgląd przykładowych danych (pierwsze wiersze)
     st.subheader('Podgląd danych')
     st.dataframe(dane_st.head())
 
+    # --- Wykres: średnie wydatki w każdym segmencie
     st.subheader('Średnie wydatki wg segmentu')
     srednie_wydatki = dane_st.groupby('SEGMENT')['SUMA_WYDATKÓW'].mean()
 
+    # Dostosowanie kolorystyki pod ciemne tło Streamlit
     fig1, ax1 = plt.subplots()
     ax1.bar(srednie_wydatki.index, srednie_wydatki.values, color='#cfcfcf')
-
     streamlit_tlo = '#0e1117'
     tekst_kolor = '#cfcfcf'
-
     ax1.set_facecolor(streamlit_tlo)
     fig1.patch.set_facecolor(streamlit_tlo)
-
     ax1.tick_params(colors=tekst_kolor)
     ax1.spines['bottom'].set_color(tekst_kolor)
     ax1.spines['left'].set_color(tekst_kolor)
-
     ax1.set_xlabel('Segment', color=tekst_kolor)
     ax1.set_ylabel('Średnie wydatki', color=tekst_kolor)
     ax1.set_title('Średnie wydatki klientów wg segmentu', color=tekst_kolor)
-
     for i, v in enumerate(srednie_wydatki):
         ax1.text(i, v / 2, f'{v:.0f}', ha='center', va='center', color=streamlit_tlo, fontsize=10, fontweight='bold')
 
     st.pyplot(fig1)
 
+    # --- Wykres: średni dochód w każdym segmencie
     st.subheader('Średni dochód wg segmentu')
     srednie_dochod = dane_st.groupby('SEGMENT')['DOCHOD'].mean()
-
     fig2, ax2 = plt.subplots()
     ax2.bar(srednie_dochod.index, srednie_dochod.values)
     ax2.set_xlabel('Segment')
@@ -557,9 +564,9 @@ if uruchom_dashboard:
     ax2.set_title('Średni dochód klientów wg segmentu')
     st.pyplot(fig2)
 
+    # --- Wykres: średnia liczba dzieci w każdym segmencie
     st.subheader('Średnia liczba dzieci wg segmentu')
     srednie_dzieci = dane_st.groupby('SEGMENT')['LICZBA_DZIECI'].mean()
-
     fig3, ax3 = plt.subplots()
     ax3.bar(srednie_dzieci.index, srednie_dzieci.values)
     ax3.set_xlabel('Segment')
@@ -567,9 +574,9 @@ if uruchom_dashboard:
     ax3.set_title('Średnia liczba dzieci wg segmentu')
     st.pyplot(fig3)
 
+    # --- Wykres: średnia recency (liczba dni od ostatniego zakupu) w każdym segmencie
     st.subheader('Średnia recency wg segmentu')
     srednia_recency = dane_st.groupby('SEGMENT')['RECENCY'].mean()
-
     fig4, ax4 = plt.subplots()
     ax4.bar(srednia_recency.index, srednia_recency.values)
     ax4.set_xlabel('Segment')
@@ -577,6 +584,7 @@ if uruchom_dashboard:
     ax4.set_title('Średnia recency klientów wg segmentu')
     st.pyplot(fig4)
 
+    # --- Wykres: liczba klientów w każdym segmencie (dystrybucja)
     st.subheader('Liczba klientów wg segmentu')
     liczba_klientow = dane_st['SEGMENT'].value_counts()
 
