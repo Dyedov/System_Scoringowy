@@ -5,7 +5,7 @@ Ten projekt to kompleksowy system analizy klientów oparty na danych marketingow
 
 ---
 
-## Zakres projektu (krok po kroku)
+## Zakres projektu 
 
 1. **Przygotowanie bazy danych i wstępne przetwarzanie**
    - Projekt rozpocząłem od pobrania syntetycznych danych o klientach i załadowania ich do lokalnej bazy Oracle.
