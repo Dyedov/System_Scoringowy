@@ -94,7 +94,7 @@ Ten projekt to kompleksowy system analizy klientów oparty na danych marketingow
 ![Wykres kołowy](images/wykres_kolowy.png)
 
 ### 🔹 Dashboard Power BI (statyczny podgląd)
-![Dashboard](images/dashboard.jpg)
+images/Dashboard_Segmentacja_Klientow.jpg
 
 ### 🔹 Macierze pomyłek:
 - Random Forest:
