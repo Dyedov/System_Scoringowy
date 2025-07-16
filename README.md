@@ -85,24 +85,24 @@ Ten projekt to kompleksowy system analizy klientów oparty na danych marketingow
 ## 🖼️ Wizualizacje
 
 ### 🔹 Heatmapa korelacji wydatków
-![Heatmapa korelacji](images/heatmapa_korelacji.png)
+![Heatmapa korelacji](Korelacja_wydatków_Heatmapa.png)
 
 ### 🔹 Wykres łokcia (Elbow Method)
-![Wykres łokcia](images/wykres_lokcia.png)
+![Wykres łokcia](Wykres_Lokcia.png)
 
 ### 🔹 Wykres kołowy – udział segmentów
-![Wykres kołowy](images/wykres_kolowy.png)
+![Wykres kołowy](Wykres_kolowy_Udzialow_segmentow.png)
 
 ### 🔹 Dashboard Power BI (statyczny podgląd)
 ![Dashboard](images/Dashboard_Segmentacja_Klientow.jpg)
 
 ### 🔹 Macierze pomyłek:
 - Random Forest:
-  ![Confusion RF](images/confusion_rf.png)
+  ![Confusion RF](Wizualizacja_macierzy_pomylek_Random_Forest.png)
 - Logistic Regression:
-  ![Confusion LR](images/confusion_lr.png)
+  ![Confusion LR](Wizualizacja_macierzy_pomylek_Logistic_Regression.png)
 - XGBoost:
-  ![Confusion XGB](images/confusion_xgb.png)
+  ![Confusion XGB](Wizualizacja_macierzy_pomylek_XGBoost.png)
 
 ---
 
