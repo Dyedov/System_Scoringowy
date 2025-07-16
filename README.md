@@ -84,6 +84,9 @@ Ten projekt to kompleksowy system analizy klientów oparty na danych marketingow
 
 ## 🖼️ Wizualizacje
 
+### 🔹 Dashboard Power BI (statyczny podgląd)
+![Dashboard](images/Dashboard_Segmentacja_Klientow.jpg)
+
 ### 🔹 Heatmapa korelacji wydatków
 ![Heatmapa korelacji](images/Korelacja_wydatków_Heatmapa.png)
 
@@ -92,9 +95,6 @@ Ten projekt to kompleksowy system analizy klientów oparty na danych marketingow
 
 ### 🔹 Wykres kołowy – udział segmentów
 ![Wykres kołowy](images/Wykres_kolowy_Udzialow_segmentow.png)
-
-### 🔹 Dashboard Power BI (statyczny podgląd)
-![Dashboard](images/Dashboard_Segmentacja_Klientow.jpg)
 
 ### 🔹 Macierze pomyłek:
   ![Confusion RF](images/Wizualizacja_macierzy_pomylek_Random_Forest.png)
