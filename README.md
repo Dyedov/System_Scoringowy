@@ -97,11 +97,8 @@ Ten projekt to kompleksowy system analizy klientów oparty na danych marketingow
 ![Dashboard](images/Dashboard_Segmentacja_Klientow.jpg)
 
 ### 🔹 Macierze pomyłek:
-- Random Forest:
   ![Confusion RF](images/Wizualizacja_macierzy_pomylek_Random_Forest.png)
-- Logistic Regression:
   ![Confusion LR](images/Wizualizacja_macierzy_pomylek_Logistic_Regression.png)
-- XGBoost:
   ![Confusion XGB](images/Wizualizacja_macierzy_pomylek_XGBoost.png)
 
 ---
