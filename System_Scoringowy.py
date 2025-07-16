@@ -41,13 +41,16 @@ recency_df = pd.read_sql('SELECT ID, RECENCY FROM CUSTOMER_DATA', con=connection
 # print(online_offline_df.head())
 
 # --- Wyznaczanie korelacji wydatków + wizualizacja heatmapy (analiza eksploracyjna)
-# wydatki_kolumny = zakupy_df.drop(columns=['ID'])
-# korelacje = wydatki_kolumny.corr()
-# plt.figure(figsize=(10,8))
-# sns.heatmap(korelacje, annot=True, cmap='coolwarm', fmt='.2f')
-# plt.title("Heatmapa korelacji wydatków")
-# plt.tight_layout()
-# plt.show()
+korelacja_wydatkow_heatmapa = False
+
+if korelacja_wydatkow_heatmapa:
+    wydatki_kolumny = zakupy_df.drop(columns=['ID'])
+    korelacje = wydatki_kolumny.corr()
+    plt.figure(figsize=(10,8))
+    sns.heatmap(korelacje, annot=True, cmap='coolwarm', fmt='.2f')
+    plt.title("Heatmapa korelacji wydatków")
+    plt.tight_layout()
+    plt.show()
 
 # --- Łączenie danych z kilku widoków (jeden rekord = jeden klient, zawiera info o wydatkach, demografii, kampaniach, kanale zakupu)
 dane = zakupy_df.merge(demografia_df, on='ID')
